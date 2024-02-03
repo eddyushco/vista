@@ -232,30 +232,34 @@
             });
         });
         function guardarRegistro() {
-        // Recopilar datos del formulario
-        const cedula = $('#validationCustom01').val();
-        const nombre = $('#validationCustom02').val();
-        const telefono = $('#validationCustom03').val();
-        const correo = $('#validationCustomUsername').val();
-        const genero = $('#validationCustom04').val();
-        const direccion = $('#validationCustom05').val();
-        const cargo = $('#validationCustom06').val();
-        const cedulaValidation = validarCedula(cedula);
+            // Recopilar datos del formulario
+            const cedula = $('#validationCustom01').val();
+            const nombre = $('#validationCustom02').val();
+            const telefono = $('#validationCustom03').val();
+            const correo = $('#validationCustomUsername').val();
+            const direccion = $('#validationCustom05').val();
+            const cargo = $('#validationCustom06').val();
+
+            // Realizar todas las validaciones
+            const cedulaValidation = validarCedula(cedula);
             const nombreValidation = validarNombre(nombre);
             const telefonoValidation = validarTelefono(telefono);
             const correoValidation = validarCorreo(correo);
             const direccionValidation = validarDireccion(direccion);
             const cargoValidation = validarCargo(cargo);
 
+            // Mostrar mensajes de error si las validaciones fallan
             mostrarMensajeError('validationCustom01', cedulaValidation.message);
             mostrarMensajeError('validationCustom02', nombreValidation.message);
             mostrarMensajeError('validationCustom03', telefonoValidation.message);
             mostrarMensajeError('validationCustomUsername', correoValidation.message);
             mostrarMensajeError('validationCustom05', direccionValidation.message);
             mostrarMensajeError('validationCustom06', cargoValidation.message);
+
+            // Verificar si hay errores de validación
             if (
                 !cedulaValidation.isValid ||
-                !nombreValidation ||
+                !nombreValidation.isValid ||
                 !telefonoValidation.isValid ||
                 !correoValidation.isValid ||
                 !direccionValidation.isValid ||
@@ -265,47 +269,58 @@
                 console.error("Error en las validaciones. Por favor, revisa los campos.");
                 return;
             }
-        // Crear objeto con datos del usuario
-        const nuevoUsuario = {
-            cedula: cedula,
-            nombre: nombre,
-            telefono: telefono,
-            correo: correo,
-            genero: genero,
-            direccion: direccion,
-            cargo: cargo
-        };
 
-        // Hacer la solicitud al servidor para guardar el nuevo usuario
-        $.post('https://api-6umj.onrender.com/users', nuevoUsuario, function (data) {
-            // Actualizar la tabla con los nuevos datos
-            const newRow = $(`
-                <tr id="${data.id}">
-                    <td>${nuevoUsuario.cedula}</td>
-                    <td>${nuevoUsuario.nombre}</td>
-                    <td>${nuevoUsuario.telefono}</td>
-                    <td>${nuevoUsuario.correo}</td>
-                    <td>${nuevoUsuario.direccion}</td>
-                    <td>${nuevoUsuario.cargo}</td>
-                    <td>
-                        <button class="btn btn-warning edit-btn" onclick="modificarUsuario('${usuario.id}')">Editar</button>
-                        <button class="btn btn-danger delete-btn" onclick="eliminarUsuario('${usuario.id}')">Eliminar</button>
-                    </td>
-                </tr>
-            `);
+            // Crear objeto con datos del usuario
+            const nuevoUsuario = {
+                cedula: cedula,
+                nombre: nombre,
+                telefono: telefono,
+                correo: correo,
+                direccion: direccion,
+                cargo: cargo
+            };
 
-            // Limpiar los campos del formulario
-            $('#validationCustom01, #validationCustom02, #validationCustom03, #validationCustomUsername, #validationCustom05, #validationCustom06').val('');
-
-            // Recargar la página
-            location.reload();
-        })
-        .fail(function (error) {
-            console.error("Error al guardar usuario:", error);
-        });location.reload();
+            // Hacer la solicitud al servidor para guardar el nuevo usuario
+            $.post('https://api-6umj.onrender.com/users', nuevoUsuario)
+                .done(function(data) {
+                    // Actualizar la tabla con los nuevos datos
+                    actualizarTabla();
+                    // Limpiar los campos del formulario
+                    limpiarCampos();
+                    // Mostrar un mensaje de éxito
+                    mostrarMensajeExito('¡Usuario guardado exitosamente!');
+                })
+                .fail(function(error) {
+                    console.error("Error al guardar usuario:", error);
+                    // Mostrar un mensaje de error al usuario
+                    mostrarMensajeError('Hubo un error al guardar el usuario. Por favor, inténtalo de nuevo.');
+                });
         }
+        function actualizarTabla() {
+            // Realizar una solicitud AJAX para obtener los datos actualizados de la tabla de usuarios
+            $.get('https://api-6umj.onrender.com/users', function (data) {
+                // Limpiar el cuerpo de la tabla antes de agregar nuevos datos
+                $('#table-body').empty();
 
-
+                // Iterar sobre los datos y agregar filas a la tabla
+                data.forEach(function (usuario) {
+                    $('#table-body').append(`
+                        <tr>
+                            <td>${usuario.cedula}</td>
+                            <td>${usuario.nombre}</td>
+                            <td>${usuario.telefono}</td>
+                            <td>${usuario.correo}</td>
+                            <td>${usuario.direccion}</td>
+                            <td>${usuario.cargo}</td>
+                            <td>
+                                <button class="btn btn-warning edit-btn" onclick="modificarUsuario('${usuario.id}')">Editar</button>
+                                <button class="btn btn-danger delete-btn" onclick="eliminarUsuario('${usuario.id}')">Eliminar</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
         function eliminarUsuario(userId) {
             // Hacer la solicitud al servidor para eliminar el usuario
             $.ajax({
@@ -315,11 +330,13 @@
                     console.log(data);
                     // Eliminar la fila de la tabla correspondiente al usuario eliminado
                     $(`#${userId}`).remove();
+                    actualizarTabla();
+
                 },
                 error: function (error) {
                     console.error("Error al eliminar usuario:", error);
                 }
-            });location.reload();
+            });
         }
         function modificarUsuario(id) {
             // Hacer la solicitud al servidor para obtener los datos del usuario a editar
@@ -337,7 +354,7 @@
                 // Guarda el ID del usuario que se está editando
                 usuarioEditandoId = id;
                 $('#submitButton').hide();
-                $('#updateButton').show(); Actualizar
+                $('#updateButton').show(); 
             });
         }
         function actualizarRegistro() {
@@ -396,6 +413,7 @@
                 data: usuarioActualizado,
                 success: function (data) {
                     console.log(data);
+                    actualizarTabla();
 
                     // Actualizar la fila en la tabla con los datos actualizados
                     $(`#${usuarioEditandoId}`).html(`
@@ -414,6 +432,7 @@
                     // Limpiar los campos del formulario y restablecer el estado
                     $('#validationCustom01, #validationCustom02, #validationCustom03, #validationCustomUsername, #validationCustom05, #validationCustom06').val('');
                     usuarioEditandoId = null;
+                    $('#validationCustom01').prop('disabled', false);
                     $('#submitButton').show();
                     $('#updateButton').hide();
                 },
@@ -421,10 +440,11 @@
                     console.error("Error al actualizar usuario:", error);
                 }
 
-            });location.reload();
+            });
         }
         function validarCedula(cedula) {
-            const isValid = /[0-9]{10}/.test(cedula);
+            // Expresión regular para verificar que solo se ingresen números positivos y que la longitud sea de 10 dígitos
+            const isValid = /^[0-9]{10}$/.test(cedula) && parseInt(cedula) > 0;
             return { isValid, message: isValid ? '' : 'Por favor, ingresa una cédula válida (10 dígitos).' };
         }
 
@@ -440,7 +460,7 @@
         }
 
         function validarTelefono(telefono) {
-            const isValid = /[0-9]{10}/.test(telefono);
+            const isValid = /[0-9]{10}/.test(telefono) && parseInt(telefono) > 0;
             return { isValid, message: isValid ? '' : 'Por favor, ingresa un número de teléfono válido (10 números).' };
         }
 
