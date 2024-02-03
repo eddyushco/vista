@@ -208,7 +208,7 @@
         let usuarioEditandoId = null;
         $(document).ready(function () {
             // Hacer la solicitud al servidor para obtener los datos
-            $.get('http://localhost:3000/users', function (data) {
+            $.get('https://api-6umj.onrender.com/users', function (data) {
                 // Limpiar el cuerpo de la tabla antes de agregar nuevos datos
                 $('#table-body').empty();
     
@@ -277,7 +277,7 @@
         };
 
         // Hacer la solicitud al servidor para guardar el nuevo usuario
-        $.post('http://localhost:3000/users', nuevoUsuario, function (data) {
+        $.post('https://api-6umj.onrender.com/users', nuevoUsuario, function (data) {
             // Actualizar la tabla con los nuevos datos
             const newRow = $(`
                 <tr id="${data.id}">
@@ -309,7 +309,7 @@
         function eliminarUsuario(userId) {
             // Hacer la solicitud al servidor para eliminar el usuario
             $.ajax({
-                url: `http://localhost:3000/users/${userId}`,
+                url: `https://api-6umj.onrender.com/users/${userId}`,
                 type: 'DELETE',
                 success: function (data) {
                     console.log(data);
@@ -323,7 +323,7 @@
         }
         function modificarUsuario(id) {
             // Hacer la solicitud al servidor para obtener los datos del usuario a editar
-            $.get(`http://localhost:3000/users/${id}`, function (usuario) {
+            $.get(`https://api-6umj.onrender.com/users/${id}`, function (usuario) {
                 console.log('Datos del usuario a editar:', usuario);
 
                 // Llena los campos del formulario con los datos del usuario
@@ -391,7 +391,7 @@
 
             // Hacer la solicitud al servidor para actualizar el usuario
             $.ajax({
-                url: `http://localhost:3000/users/${usuarioEditandoId}`,
+                url: `https://api-6umj.onrender.com/users/${usuarioEditandoId}`,
                 type: 'PUT',
                 data: usuarioActualizado,
                 success: function (data) {
