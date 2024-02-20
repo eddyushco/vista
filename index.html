@@ -145,121 +145,7 @@
         </thead>
         <tbody id="table-body"></tbody>
     </table>
-    <script>
-        $(document).ready(function() {
-            // Agregar evento de escucha para el campo de la cédula
-            $('#validationCustom01').on('input', function() {
-                const cedula = $(this).val();
-                const cedulaValidation = validarCedula(cedula);
-                mostrarMensajeError('validationCustom01', cedulaValidation.message);
-            });
-            $('#validationCustom02').on('input', function() {
-                const nombre = $(this).val();
-                const nombreValidation = validarNombre(nombre);
-                mostrarMensajeError('validationCustom02', nombreValidation.message);
-            });
-
-            // Evento de escucha para el campo del teléfono
-            $('#validationCustom03').on('input', function() {
-                const telefono = $(this).val();
-                const telefonoValidation = validarTelefono(telefono);
-                mostrarMensajeError('validationCustom03', telefonoValidation.message);
-            });
-
-            // Evento de escucha para el campo del correo electrónico
-            $('#validationCustomUsername').on('input', function() {
-                const correo = $(this).val();
-                const correoValidation = validarCorreo(correo);
-                mostrarMensajeError('validationCustomUsername', correoValidation.message);
-            });
-
-            // Evento de escucha para el campo de la dirección
-            $('#validationCustom05').on('input', function() {
-                const direccion = $(this).val();
-                const direccionValidation = validarDireccion(direccion);
-                mostrarMensajeError('validationCustom05', direccionValidation.message);
-            });
-
-            // Evento de escucha para el campo del cargo
-            $('#validationCustom06').on('input', function() {
-                const cargo = $(this).val();
-                const cargoValidation = validarCargo(cargo);
-                mostrarMensajeError('validationCustom06', cargoValidation.message);
-            });
-        });
-        function mostrarMensajeError(elementId, message) {
-            // Mostrar el mensaje de error en el elemento correspondiente
-            const element = $(`#${elementId}`);
-            const feedbackElement = element.next('.invalid-feedback');
-        
-            if (!message) {
-                element.removeClass('is-invalid');
-                feedbackElement.text('');
-            } else {
-                element.addClass('is-invalid');
-                feedbackElement.text(message);
-            }
-        }
-        
-    </script>
-   
-    <script>
-        
-        let usuarioEditandoId = null;
-        $(document).ready(function () {
-            // Hacer la solicitud al servidor para obtener los datos
-            $.get('https://api-6umj.onrender.com/users', function (data) {
-                // Limpiar el cuerpo de la tabla antes de agregar nuevos datos
-                $('#table-body').empty();
-    
-                // Iterar sobre los datos y agregar filas a la tabla
-                data.forEach(function (usuario) {
-                    $('#table-body').append(`
-                        <tr>
-                            <td>${usuario.cedula}</td>
-                            <td>${usuario.nombre}</td>
-                            <td>${usuario.telefono}</td>
-                            <td>${usuario.correo}</td>
-                            <td>${usuario.direccion}</td>
-                            <td>${usuario.cargo}</td>
-                            <td>
-                                <button class="btn btn-warning edit-btn" onclick="modificarUsuario('${usuario.id}')">Editar</button>
-                                <button class="btn btn-danger delete-btn" onclick="eliminarUsuario('${usuario.id}')">Eliminar</button>
-                            </td>
-                        </tr>
-                    `);
-                });
-            });
-        });
-        function guardarRegistro() {
-            // Recopilar datos del formulario
-            const cedula = $('#validationCustom01').val();
-            const nombre = $('#validationCustom02').val();
-            const telefono = $('#validationCustom03').val();
-            const correo = $('#validationCustomUsername').val();
-            const direccion = $('#validationCustom05').val();
-            const cargo = $('#validationCustom06').val();
-
-            // Realizar todas las validaciones
-            const cedulaValidation = validarCedula(cedula);
-            const nombreValidation = validarNombre(nombre);
-            const telefonoValidation = validarTelefono(telefono);
-            const correoValidation = validarCorreo(correo);
-            const direccionValidation = validarDireccion(direccion);
-            const cargoValidation = validarCargo(cargo);
-
-            // Mostrar mensajes de error si las validaciones fallan
-            mostrarMensajeError('validationCustom01', cedulaValidation.message);
-            mostrarMensajeError('validationCustom02', nombreValidation.message);
-            mostrarMensajeError('validationCustom03', telefonoValidation.message);
-            mostrarMensajeError('validationCustomUsername', correoValidation.message);
-            mostrarMensajeError('validationCustom05', direccionValidation.message);
-            mostrarMensajeError('validationCustom06', cargoValidation.message);
-
-            // Verificar si hay errores de validación
-            if (
-                !cedulaValidation.isValid ||
-                !nombreValidation.isValid ||
+                    !nombreValidation.isValid ||
                 !telefonoValidation.isValid ||
                 !correoValidation.isValid ||
                 !direccionValidation.isValid ||
@@ -492,14 +378,7 @@
             element.addClass('is-invalid');
             feedbackElement.text(message);
         }
-        function limpiarCampos() {
-            // Limpiar los campos del formulario y restablecer el estado
-            $('#validationCustom01, #validationCustom02, #validationCustom03, #validationCustomUsername, #validationCustom05, #validationCustom06').val('');
-            usuarioEditandoId = null;
-            $('#validationCustom01').prop('disabled', false);
-            $('#submitButton').show();
-            $('#updateButton').hide();
-        }
+        
     </script>
     
 </body>
